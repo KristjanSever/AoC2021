@@ -39,9 +39,9 @@ class graph:
                 vertices.append(nxtvrtx)
         return vertices
 
-#could fasten it with table as a memory, didnt bother.
-#takes 45 secs, which is very bad
+memory = {}
 def numOfPaths(g, curVert, used, path, secondTicket):
+    global memory
     path.append(curVert)
     if curVert in used:
         if secondTicket == True and curVert != 'start' and curVert != 'end':
@@ -58,7 +58,12 @@ def numOfPaths(g, curVert, used, path, secondTicket):
         for edgeVertice in g.getOtherSide(curVert):
             newPath = copy.deepcopy(path)
             newUsed = copy.deepcopy(used)
-            paths += numOfPaths(g, edgeVertice, newUsed, newPath,secondTicket)
+            if curVert +  edgeVertice + ''.join(used) + str(secondTicket) in memory:
+                res = memory[curVert +  edgeVertice + ''.join(used) + str(secondTicket)]
+            else:
+                res = numOfPaths(g, edgeVertice, newUsed, newPath,secondTicket)
+                memory[curVert +  edgeVertice + ''.join(used) + str(secondTicket)] = res
+            paths += res
         return paths
 
 start_time = time.time()
@@ -71,5 +76,6 @@ for line in f:
     g.addEdge(edge)
 
 print(numOfPaths(g,'start', {},[], True))
+
 
 print("--- %s seconds ---" % (time.time() - start_time))
